@@ -163,7 +163,7 @@ func main() {
 	}()
 
 	// get all changed modules for this commit
-	modules, err := changedModules(gitTarget, gitWorkspace)
+	modules, err := findChangedModules(gitTarget, gitWorkspace)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -234,11 +234,11 @@ func main() {
 	wg.Wait()
 }
 
-func changedModules(targetBranch string, workspace string) ([]string, error) {
+func findChangedModules(targetBranch string, workspace string) ([]string, error) {
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
-	// use git diff-tree to get all changed files
+	// use git diff to get all changed files
 	cmd := exec.Command("git", "-C", workspace, "diff", "--name-only", targetBranch)
 
 	output, err := cmd.Output()
