@@ -269,8 +269,11 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	// addressing ownership issue https://github.com/actions/checkout/issues/766
 	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
 
+	// fetch origin main
+	runCommand("git", "fetch", "--depth=1", "origin", targetBranch)
+
 	// use git diff to get all changed files
-	output := runCommand("git", "diff", "--name-only", "origin/HEAD", "--", workspace)
+	output := runCommand("git", "diff", "--name-only", targetBranch, "--", workspace)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
