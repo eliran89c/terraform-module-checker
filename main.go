@@ -252,7 +252,10 @@ func runCommand(name string, args ...string) string {
 		log.Fatal(resp)
 	}
 
-	log.Debug("Response: ", resp)
+	if resp != "" {
+		log.Debug("Response: ", resp)
+	}
+
 	return resp
 }
 
@@ -263,6 +266,7 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
+	// addressing ownership issue https://github.com/actions/checkout/issues/766
 	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
 
 	// use git diff to get all changed files
