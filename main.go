@@ -242,14 +242,12 @@ func main() {
 }
 
 func findChangedModules(targetBranch string, workspace string) ([]string, error) {
-	log.Debugf("Searching for modified modules compare to %v branch. [%v]", targetBranch, workspace)
-
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
 	// use git diff to get all changed files
 	cmd := exec.Command("git", "-C", workspace, "diff", "--name-only", targetBranch)
-
+	cmd.Stderr = os.Stderr
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get list of changed files: %v", err)
