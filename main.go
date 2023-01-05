@@ -242,6 +242,7 @@ func main() {
 }
 
 func runCommand(name string, args ...string) string {
+	log.Debug("Running command: ", name, args)
 	output, err := exec.Command(name, args...).CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
@@ -256,8 +257,8 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
-	log.Debug(runCommand("ls", "-la", ".git/"))
-	log.Debug(runCommand("git", "config", "--global", "--add", "safe.directory", workspace))
+	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
+	runCommand("git", "fetch", "--depth=1", "origin", "+refs/tags/*:refs/tags/*", "||", "true")
 
 	// use git diff to get all changed files
 	output := runCommand("git", "-C", workspace, "diff", "--name-only", targetBranch)
