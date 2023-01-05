@@ -243,10 +243,18 @@ func main() {
 
 func runCommand(name string, args ...string) string {
 	log.Debug("Running command: ", name, args)
-	output, err := exec.Command(name, args...).CombinedOutput()
+	cmd := exec.Command(name, args...)
+
+	if os.Getenv("LOG_LEVEL") == "DEBUG" {
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+	}
+
+	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return string(output)
 }
 
