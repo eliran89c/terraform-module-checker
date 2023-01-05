@@ -5,12 +5,12 @@ go 1.19
 require (
 	github.com/hashicorp/go-version v1.6.0
 	github.com/hashicorp/hcl/v2 v2.15.0
+	github.com/hashicorp/terraform-json v0.14.0
 	github.com/sirupsen/logrus v1.4.1
 )
 
 require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/terraform-json v0.14.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20220517005047-85d78b3ac167 // indirect
