@@ -264,7 +264,6 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	uniqueMap := make(map[string]struct{})
 
 	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
-	runCommand("git", "fetch", "--depth=1", "origin", "+refs/tags/*:refs/tags/*", "||", "true")
 
 	// use git diff to get all changed files
 	output := runCommand("git", "-C", workspace, "diff", "--name-only", targetBranch)
