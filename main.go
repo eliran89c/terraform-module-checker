@@ -35,6 +35,9 @@ func init() {
 	if os.Getenv("LOG_LEVEL") == "DEBUG" {
 		log.SetLevel(log.DebugLevel)
 	}
+
+	// enable github action colors
+	os.Setenv("TERM", "xterm-color")
 }
 
 type terraformInstaller struct {
