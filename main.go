@@ -17,6 +17,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsimple"
 	"github.com/hashicorp/terraform-exec/tfexec"
+	tfjson "github.com/hashicorp/terraform-json"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -209,15 +210,21 @@ func main() {
 
 			// check if validation failed
 			if !validate.Valid {
-				for _, d := range validate.Diagnostics {
-					logger := log.WithFields(log.Fields{
-						"module":   module,
-						"filename": d.Range.Filename,
-						"line":     d.Range.Start.Line,
-					})
-					logger.Errorln(d.Detail)
-				}
 				atomic.AddInt32(&errCount, 1)
+			}
+
+			// print the validation result
+			for _, d := range validate.Diagnostics {
+				logger := log.WithFields(log.Fields{
+					"module":   module,
+					"filename": d.Range.Filename,
+					"line":     d.Range.Start.Line,
+				})
+				if d.Severity == tfjson.DiagnosticSeverityError {
+					logger.Errorln(d.Detail)
+				} else if d.Severity == tfjson.DiagnosticSeverityWarning {
+					logger.Warnln(d.Summary)
+				}
 			}
 
 			// format terraform code
