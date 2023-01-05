@@ -256,11 +256,11 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
-	log.Debug(runCommand("ls", "-la"))
+	log.Debug(runCommand("ls", "-la", ".git/"))
 	log.Debug(runCommand("git", "config", "--global", "--add", "safe.directory", workspace))
 
 	// use git diff to get all changed files
-	output := runCommand("git", "diff", "--name-only", targetBranch)
+	output := runCommand("git", "-C", workspace, "diff", "--name-only", targetBranch)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
