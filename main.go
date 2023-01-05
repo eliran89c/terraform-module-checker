@@ -246,11 +246,14 @@ func runCommand(name string, args ...string) string {
 	cmd := exec.Command(name, args...)
 
 	output, err := cmd.CombinedOutput()
+	resp := string(output)
+
 	if err != nil {
-		log.Fatal(string(output))
+		log.Fatal(resp)
 	}
 
-	return string(output)
+	log.Debug("Response: ", resp)
+	return resp
 }
 
 func findChangedModules(targetBranch string, workspace string) ([]string, error) {
