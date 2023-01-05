@@ -241,6 +241,14 @@ func main() {
 	wg.Wait()
 }
 
+func runCommand(name string, args ...string) string {
+	output, err := exec.Command(name, args...).CombinedOutput()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(output)
+}
+
 func findChangedModules(targetBranch string, workspace string) ([]string, error) {
 	log.Debugln("workspace:", workspace)
 	log.Debugln("target-branch:", targetBranch)
@@ -248,13 +256,11 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
-	// use git diff to get all changed files
-	cmd := exec.Command("git", "-C", workspace, "diff", "--name-only", targetBranch)
+	log.Debug(runCommand("ls", "-la"))
+	log.Debug(runCommand("git", "config", "--global", "--add", "safe.directory", workspace))
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get list of changed files: %v", err)
-	}
+	// use git diff to get all changed files
+	output := runCommand("git", "-C", workspace, "diff", "--name-only", targetBranch)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
