@@ -270,7 +270,7 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
 
 	// use git diff to get all changed files
-	output := runCommand("git", "-C", workspace, "diff", "--name-only", fmt.Sprintf("origin/%v", targetBranch))
+	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v", targetBranch), "--", workspace)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
