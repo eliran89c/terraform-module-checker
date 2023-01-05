@@ -247,7 +247,6 @@ func runCommand(name string, args ...string) string {
 
 	if os.Getenv("LOG_LEVEL") == "DEBUG" {
 		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
 	}
 
 	output, err := cmd.CombinedOutput()
