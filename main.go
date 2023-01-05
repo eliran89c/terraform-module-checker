@@ -272,6 +272,8 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	// fetch origin main
 	runCommand("git", "fetch", "--depth=1", "origin", targetBranch)
 
+	runCommand("git", "branch", "-l")
+
 	// use git diff to get all changed files
 	output := runCommand("git", "diff", "--name-only", "origin/main", "--", workspace)
 
