@@ -154,7 +154,7 @@ func main() {
 	// create temporary folder for binaries
 	log.Debugln("Create temporary folder for binaries: ", tempBinariesFolder)
 	if err := createFolder(tempBinariesFolder); err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	// delete temp folder at the end of the execution
@@ -166,7 +166,7 @@ func main() {
 	// get all changed modules for this commit
 	modules, err := findChangedModules(gitTarget, gitWorkspace)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	// run over all changed modules
@@ -242,6 +242,8 @@ func main() {
 }
 
 func findChangedModules(targetBranch string, workspace string) ([]string, error) {
+	log.Debugf("Searching for modified modules compare to %v branch. [%v]", targetBranch, workspace)
+
 	var modules []string
 	uniqueMap := make(map[string]struct{})
 
