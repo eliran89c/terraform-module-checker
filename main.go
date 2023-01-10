@@ -136,10 +136,6 @@ func createFolder(p string) error {
 }
 
 func main() {
-	// get pull_requests properties
-	gitTarget := os.Getenv("GITHUB_BASE_REF")
-	gitWorkspace := os.Getenv("GITHUB_WORKSPACE")
-
 	// set error counter, mutex and waiting group for the goroutines
 	var wg sync.WaitGroup
 	var errCount int32
@@ -167,7 +163,7 @@ func main() {
 	}()
 
 	// get all changed modules for this commit
-	modules, err := findChangedModules(gitTarget, gitWorkspace)
+	modules, err := findChangedModules()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -262,7 +258,11 @@ func runCommand(name string, args ...string) string {
 	return resp
 }
 
-func findChangedModules(targetBranch string, workspace string) ([]string, error) {
+func findChangedModules() ([]string, error) {
+	// get pull_requests properties
+	targetBranch := os.Getenv("GITHUB_BASE_REF")
+	workspace := os.Getenv("GITHUB_WORKSPACE")
+
 	log.Debugln("workspace:", workspace)
 	log.Debugln("target-branch:", targetBranch)
 
@@ -276,12 +276,17 @@ func findChangedModules(targetBranch string, workspace string) ([]string, error)
 	runCommand("git", "fetch", "--depth=1", "origin", targetBranch)
 
 	// use git diff to get all changed files
-	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v", targetBranch), "--", workspace)
+	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...", targetBranch), "--", workspace)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
 		// remove empty lines
 		if line == "" {
+			continue
+		}
+
+		// remove non-tf changes
+		if !strings.HasSuffix(line, ".tf") {
 			continue
 		}
 
