@@ -261,12 +261,10 @@ func runCommand(name string, args ...string) string {
 func findChangedModules() ([]string, error) {
 	// get pull_requests properties
 	dstBranch := os.Getenv("GITHUB_BASE_REF")
-	srcBranch := os.Getenv("GITHUB_HEAD_REF")
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 
 	log.Debugln("workspace:", workspace)
 	log.Debugln("target-branch:", dstBranch)
-	log.Debugln("source-branch:", srcBranch)
 
 	var modules []string
 	uniqueMap := make(map[string]struct{})
@@ -276,7 +274,7 @@ func findChangedModules() ([]string, error) {
 
 	// fetch branches from origin
 	runCommand("git", "fetch", "origin", dstBranch)
-	runCommand("git", "fetch", "origin", srcBranch)
+	runCommand("git", "rebase", fmt.Sprintf("origin/%v", dstBranch))
 
 	// use git diff to get all changed files
 	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...HEAD", dstBranch), "--", workspace)
