@@ -261,7 +261,7 @@ func runCommand(name string, args ...string) string {
 func findChangedModules() ([]string, error) {
 	// get pull_requests properties
 	dstBranch := os.Getenv("GITHUB_BASE_REF")
-	srcBranch := os.Getenv("GITHUB_REF_NAME")
+	srcBranch := os.Getenv("GITHUB_HEAD_REF")
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 
 	log.Debugln("workspace:", workspace)
