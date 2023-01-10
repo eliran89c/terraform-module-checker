@@ -279,7 +279,7 @@ func findChangedModules() ([]string, error) {
 	runCommand("git", "fetch", "origin", srcBranch)
 
 	// use git diff to get all changed files
-	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...origin/%v", dstBranch, srcBranch), "--", workspace)
+	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...HEAD", dstBranch), "--", workspace)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
