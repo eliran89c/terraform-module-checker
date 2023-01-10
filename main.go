@@ -197,7 +197,10 @@ func main() {
 			}
 
 			// run init before validation (required)
-			tf.Init(context.TODO(), tfexec.Backend(false))
+			err = tf.Init(context.TODO(), tfexec.Backend(false))
+			if err != nil {
+				logger.Warnf("Terraform init error: %v", err)
+			}
 
 			// validate terraform module
 			validate, err := tf.Validate(context.TODO())
@@ -260,11 +263,11 @@ func runCommand(name string, args ...string) string {
 
 func findChangedModules() ([]string, error) {
 	// get pull_requests properties
-	targetBranch := os.Getenv("GITHUB_BASE_REF")
+	dstBranch := os.Getenv("GITHUB_BASE_REF")
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 
 	log.Debugln("workspace:", workspace)
-	log.Debugln("target-branch:", targetBranch)
+	log.Debugln("target-branch:", dstBranch)
 
 	var modules []string
 	uniqueMap := make(map[string]struct{})
@@ -272,11 +275,11 @@ func findChangedModules() ([]string, error) {
 	// addressing ownership issue https://github.com/actions/checkout/issues/766
 	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
 
-	// fetch origin main
-	runCommand("git", "fetch", "--depth=1", "origin", targetBranch)
+	// fetch branches from origin
+	runCommand("git", "fetch", "--depth=1", "origin", dstBranch)
 
 	// use git diff to get all changed files
-	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...", targetBranch), "--", workspace)
+	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v", dstBranch), "--", workspace)
 
 	for _, line := range strings.Split(string(output), "\n") {
 
