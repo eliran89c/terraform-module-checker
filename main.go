@@ -197,7 +197,10 @@ func main() {
 			}
 
 			// run init before validation (required)
-			tf.Init(context.TODO(), tfexec.Backend(false))
+			err = tf.Init(context.TODO(), tfexec.Backend(false))
+			if err != nil {
+				logger.Warnf("Terraform init error: %v", err)
+			}
 
 			// validate terraform module
 			validate, err := tf.Validate(context.TODO())
