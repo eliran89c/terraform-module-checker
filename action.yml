@@ -1,0 +1,20 @@
+name: terraform-module-checker
+author: Eliran Cohen
+description: A Github action for validating Terraform modules
+
+inputs:
+  log-type:
+    description: The log type. one of JSON or TEXT
+    required: false
+    default: "TEXT"
+  log-level:
+    description: The log level. once of INFO or DEBUG
+    required: false
+    default: "INFO"
+
+runs:
+  using: docker
+  image: docker://eliran89c/terraform-module-checker:0.1.0
+  env:
+    LOG_TYPE: ${{ inputs.log-type }}
+    LOG_LEVEL: ${{ inputs.log-level }}
