@@ -246,6 +246,7 @@ func main() {
 }
 
 func runCommand(name string, args ...string) string {
+	log.Infoln("Running command: ", name, args)
 	cmd := exec.Command(name, args...)
 
 	output, err := cmd.CombinedOutput()
@@ -254,6 +255,8 @@ func runCommand(name string, args ...string) string {
 	if err != nil {
 		log.Fatal(resp)
 	}
+
+	log.Infoln(output)
 
 	return resp
 }
