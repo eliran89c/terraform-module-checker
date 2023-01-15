@@ -273,7 +273,7 @@ func findChangedModules() ([]string, error) {
 	uniqueMap := make(map[string]struct{})
 
 	// addressing ownership issue https://github.com/actions/checkout/issues/766
-	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
+	//runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
 
 	// use git diff to get all changed files
 	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("%v...", dstBranch), "--", workspace)
