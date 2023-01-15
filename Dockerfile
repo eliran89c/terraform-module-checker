@@ -20,7 +20,8 @@ RUN set -x \
     && apk update \
     && apk add --no-cache \
         git \
-        git-lfs
+        git-lfs\
+        openssh
 
 COPY --from=builder /app/bin/terraform-module-checker .
 ENTRYPOINT ["/terraform-module-checker"]
