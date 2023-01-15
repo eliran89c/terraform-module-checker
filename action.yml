@@ -11,6 +11,10 @@ inputs:
     description: The log level. once of INFO or DEBUG
     required: false
     default: "INFO"
+  github-token:
+    description: A GitHub token to authenticate with private repositories.
+    required: false
+    default: ""
 
 runs:
   using: docker
@@ -18,3 +22,4 @@ runs:
   env:
     LOG_TYPE: ${{ inputs.log-type }}
     LOG_LEVEL: ${{ inputs.log-level }}
+    GH_TOKEN: ${{ inputs.github-token }}

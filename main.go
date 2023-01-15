@@ -36,8 +36,10 @@ func init() {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	// enable github action colors
-	os.Setenv("TERM", "xterm-color")
+	githubToken := os.Getenv("GH_TOKEN")
+	if githubToken != "" {
+		runCommand("git", "config", "--global", fmt.Sprintf("url.\"https://oauth2:%v@github.com\".insteadOf", githubToken), "ssh://git@github.com")
+	}
 }
 
 type terraformInstaller struct {
@@ -244,7 +246,6 @@ func main() {
 }
 
 func runCommand(name string, args ...string) string {
-	log.Debug("Running command: ", name, args)
 	cmd := exec.Command(name, args...)
 
 	output, err := cmd.CombinedOutput()
@@ -252,10 +253,6 @@ func runCommand(name string, args ...string) string {
 
 	if err != nil {
 		log.Fatal(resp)
-	}
-
-	if resp != "" {
-		log.Debug("Response: ", resp)
 	}
 
 	return resp
@@ -277,8 +274,9 @@ func findChangedModules() ([]string, error) {
 
 	// use git diff to get all changed files
 	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...", dstBranch), "--", workspace)
+	log.Debugln("Changed files: ", output)
 
-	for _, line := range strings.Split(string(output), "\n") {
+	for _, line := range strings.Split(output, "\n") {
 
 		// remove empty lines
 		if line == "" {
