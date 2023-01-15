@@ -18,8 +18,7 @@ inputs:
 
 runs:
   using: docker
-#  image: docker://eliran89c/terraform-module-checker:0.1.0
-  image: Dockerfile
+  image: docker://eliran89c/terraform-module-checker:0.1.0
   env:
     LOG_TYPE: ${{ inputs.log-type }}
     LOG_LEVEL: ${{ inputs.log-level }}
