@@ -38,7 +38,7 @@ func init() {
 
 	githubToken := os.Getenv("GH_TOKEN")
 	if githubToken != "" {
-		runCommand("git", "config", "--global", fmt.Sprintf("url.\"https://oauth2:%v@github.com\".insteadOf", githubToken), "ssh://git@github.com")
+		runCommand("git", "config", "--global", fmt.Sprintf("url.\"https://oauth2:%v@github.com\".insteadOf", githubToken), "\"ssh://git@github.com\"")
 	}
 }
 
