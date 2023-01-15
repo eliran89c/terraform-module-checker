@@ -38,7 +38,7 @@ func init() {
 
 	githubToken := os.Getenv("GH_TOKEN")
 	if githubToken != "" {
-		runCommand("git", "config", "--global", fmt.Sprintf("url.\"https://oauth2:%v@github.com\".insteadOf", githubToken), "\"ssh://git@github.com\"")
+		runCommand("git", "config", "--global", fmt.Sprintf("url.https://oauth2:%v@github.com.insteadOf", githubToken), "ssh://git@github.com")
 	}
 }
 
@@ -169,9 +169,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// print git configuration
-	log.Info(runCommand("git", "config", "--list"))
 
 	// run over all changed modules
 	log.Info("Modules to check: ", strings.Join(modules, ", "))
