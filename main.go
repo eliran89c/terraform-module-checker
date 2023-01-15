@@ -170,6 +170,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// print git configuration
+	log.Info(runCommand("git", "config", "--list"))
+
 	// run over all changed modules
 	log.Info("Modules to check: ", strings.Join(modules, ", "))
 	for _, module := range modules {
@@ -246,7 +249,6 @@ func main() {
 }
 
 func runCommand(name string, args ...string) string {
-	log.Infoln("Running command: ", name, args)
 	cmd := exec.Command(name, args...)
 
 	output, err := cmd.CombinedOutput()
@@ -255,8 +257,6 @@ func runCommand(name string, args ...string) string {
 	if err != nil {
 		log.Fatal(resp)
 	}
-
-	log.Infoln(output)
 
 	return resp
 }
@@ -277,7 +277,6 @@ func findChangedModules() ([]string, error) {
 
 	// use git diff to get all changed files
 	output := runCommand("git", "diff", "--name-only", fmt.Sprintf("origin/%v...", dstBranch), "--", workspace)
-	log.Debugln("Changed files: ", output)
 
 	for _, line := range strings.Split(output, "\n") {
 
