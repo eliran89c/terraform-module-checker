@@ -12,7 +12,7 @@ inputs:
     required: false
     default: "INFO"
   modules:
-    description: A comma separated list with all modules to check (relative or absolute path).
+    description: A comma separated list with modules to check (relative or absolute path).
     required: false
     default: ""
   github-token:
