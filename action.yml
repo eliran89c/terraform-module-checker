@@ -6,11 +6,15 @@ inputs:
   log-type:
     description: The log type. one of JSON or TEXT
     required: false
-    default: "TEXT"
+    default: "JSON"
   log-level:
-    description: The log level. once of INFO or DEBUG
+    description: The log level. one of INFO or DEBUG
     required: false
     default: "INFO"
+  modules:
+    description: A comma separated list with all modules to check (relative or absolute path).
+    required: false
+    default: ""
   github-token:
     description: A GitHub token to authenticate with private repositories.
     required: false
@@ -23,3 +27,4 @@ runs:
     LOG_TYPE: ${{ inputs.log-type }}
     LOG_LEVEL: ${{ inputs.log-level }}
     GH_TOKEN: ${{ inputs.github-token }}
+    MODULES: ${{ inputs.modules }}
