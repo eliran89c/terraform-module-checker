@@ -29,7 +29,7 @@ const (
 
 func init() {
 	if os.Getenv("LOG_TYPE") == "JSON" {
-		log.SetFormatter(&log.JSONFormatter{})
+		log.SetFormatter(&log.JSONFormatter{PrettyPrint: true})
 	}
 
 	if os.Getenv("LOG_LEVEL") == "DEBUG" {
@@ -41,9 +41,6 @@ func init() {
 	if githubToken != "" {
 		runCommand("git", "config", "--global", fmt.Sprintf("url.https://oauth2:%v@github.com.insteadOf", githubToken), "ssh://git@github.com")
 	}
-
-	//https://github.com/actions/checkout/issues/766
-	runCommand("git", "config", "--global", "--add", "safe.directory", os.Getenv("GITHUB_WORKSPACE"))
 }
 
 type terraformInstaller struct {
@@ -205,7 +202,9 @@ func main() {
 			// run init before validation (required)
 			err = tf.Init(context.TODO(), tfexec.Backend(false))
 			if err != nil {
-				logger.Debugf("Terraform init error: %v", err)
+				logger.Warnf("Terraform init error: %v", err)
+				atomic.AddInt32(&errCount, 1)
+				return
 			}
 
 			// validate terraform module
@@ -223,15 +222,16 @@ func main() {
 
 			// print the validation result
 			for _, d := range validate.Diagnostics {
-				logger := log.WithFields(log.Fields{
-					"module":   module,
-					"filename": d.Range.Filename,
-					"line":     d.Range.Start.Line,
-				})
+				var location string
+
+				if d.Range != nil {
+					location = fmt.Sprintf("[%v:%v]", d.Range.Filename, d.Range.Start.Line)
+				}
+
 				if d.Severity == tfjson.DiagnosticSeverityError {
-					logger.Errorln(d.Detail)
+					logger.Errorf("%v %v", d.Detail, location)
 				} else if d.Severity == tfjson.DiagnosticSeverityWarning {
-					logger.Warnln(d.Summary)
+					logger.Warnf("%v %v", d.Summary, location)
 				}
 			}
 
@@ -263,12 +263,24 @@ func runCommand(name string, args ...string) string {
 }
 
 func findChangedModules() ([]string, error) {
+	fromEnv := os.Getenv("MODULES")
+	if fromEnv != "" {
+		m := strings.Split(fromEnv, ",")
+		for i := range m {
+			m[i] = strings.TrimSpace(m[i])
+		}
+		return m, nil
+	}
+
 	// get pull_requests properties
 	dstBranch := os.Getenv("GITHUB_BASE_REF")
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 
 	log.Debugln("workspace:", workspace)
 	log.Debugln("target-branch:", dstBranch)
+
+	//https://github.com/actions/checkout/issues/766
+	runCommand("git", "config", "--global", "--add", "safe.directory", workspace)
 
 	var modules []string
 	uniqueMap := make(map[string]struct{})
